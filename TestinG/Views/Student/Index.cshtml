@@ -1,0 +1,150 @@
+﻿@model IEnumerable<TestinG.Models.Student>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="//cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#btnAddToList").click(function() {
+            inputField();
+
+        });
+
+        $('#btnSubmit').click(function () {
+            Insert();
+        });
+    });
+
+    inputField = () => {
+        var tblItemList = $('#tblStudent');
+        var inField =
+            '<tr><td><input style="text-align: left" type="text" id="textdepId" name="txtdepId"  /></td><td><input style="text-align: left" type="text" id="textName" name="txtName"  /></td><td><input style="text-align: left" type="text" id="textRoll" name="txtRoll" /></td><td><input type="button" value="Remove" name="remove" class="btn btn-danger" onclick="RemoveItem(this)" /></td></tr>';
+        tblItemList.append(inField);
+
+
+    }
+
+    function RemoveItem(productId) {
+        $(productId).closest('tr').remove();
+    }
+
+
+    function Insert() {
+        var studentviewmodel = {};
+        var Students = Array();
+
+        
+        
+        //$("#tblStudent").find("tr:gt(0)").each(function () {
+        //    var studentview = {};
+        //    studentview.DepId = parseInt($(this).find("td:eq(0)").text());
+        //    studentview.Name = $(this).find("td:eq(1)").text();
+        //    studentview.Roll = $(this).find("td:eq(2)").text();
+        //    Students.push(studentview);
+        //});
+
+
+        $("#tblStudent").find("tr:gt(0)").each(function () {
+            var OrderDetailViewModel = {};
+            //OrderDetailViewModel.DepId = parseInt($(this).find("td:eq(0)").text());
+            OrderDetailViewModel.DepId = parseInt($(this).find("td:eq(0) input[type='text']").val());
+            OrderDetailViewModel.Name = $(this).find("td:eq(1) input[type='text']").val();
+            alert(OrderDetailViewModel.Name);
+            OrderDetailViewModel.Roll = $(this).find("td:eq(2) input[type='text']").val();
+            alert(OrderDetailViewModel.Roll);
+            Students.push(OrderDetailViewModel);
+        });
+        studentviewmodel.Students = Students;
+
+        $.ajax({
+            async: true,
+            type: "POST",
+            dataType: 'JSON',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(studentviewmodel),
+            url: '/Student/AddStudent',
+            success: function (data) {
+                Swal.fire(
+                    data
+                ).then(function () {
+                    window.location.reload();
+                });
+            },
+            error: function () {
+                alart("There is some problem to adding the data");
+            }
+        });
+
+    }
+
+</script>
+
+<h2>Index</h2>
+
+
+
+
+
+<fieldset>
+    <legend>Student List</legend>
+    <table class="table table-bordered" style="width: 100%" id="tblStudent">
+        
+        <tr>
+            <th>Dep Id</th>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Add or Remove</th>
+        </tr>
+        <tr>
+            <td><input style="text-align: left" type="text" id="textdepId" name="txtdepId" /></td>
+            <td><input style="text-align: left" type="text" id="textName" name="txtName" /></td>
+            <td><input style="text-align: left" type="text" id="textRoll" name="txtRoll" /></td>
+            <td><input type='button' value='Add' name='add' class='btn btn-warning' onclick="inputField(this)" /></td>
+        </tr>
+    </table>
+    <div class="text-center">
+        <button class="btn btn-success" id="btnSubmit">Submit</button>
+    </div>
+
+</fieldset>
+
+<br />
+<br/>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.DepId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Roll)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.DepId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Roll)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>
